@@ -18,39 +18,39 @@ interface UserDTO {
   updated_at: Date
 }
 
-class CreateUserService {   
+class CreateUserService {
 
-    public async execute({ name, email, password }: RequestDTO): Promise<UserDTO> {
-        const userRepository = getRepository(User);
+  public async execute({ name, email, password }: RequestDTO): Promise<UserDTO> {
+    const userRepository = getRepository(User);
 
-        const isExistUserWithEmail = await userRepository.findOne({
-          where: { email }
-        });
+    const isExistUserWithEmail = await userRepository.findOne({
+      where: { email }
+    });
 
-        if (isExistUserWithEmail) {
-          throw Error('This e-mail already in use!');
-        }
-
-        const hashedPassword = (await hash(password, 8)).toString();
-
-        const user = userRepository.create({
-          name,
-          email,
-          password: hashedPassword
-        });
-
-        await userRepository.save(user);
-
-        const userResponse: UserDTO = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          created_at: user.createdAt,
-          updated_at: user.updatedAt
-        };
-
-        return userResponse;
+    if (isExistUserWithEmail) {
+      throw Error('This e-mail already in use!');
     }
+
+    const hashedPassword = (await hash(password, 8)).toString();
+
+    const user = userRepository.create({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+    await userRepository.save(user);
+
+    const userResponse: UserDTO = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      created_at: user.createdAt,
+      updated_at: user.updatedAt
+    };
+
+    return userResponse;
+  }
 
 }
 

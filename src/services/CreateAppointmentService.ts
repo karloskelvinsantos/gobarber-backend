@@ -10,28 +10,28 @@ interface RequestDTO {
   date: Date,
 }
 
-class CreateAppointmentService {   
+class CreateAppointmentService {
   public async execute({ providerId, date }: RequestDTO): Promise<Appointment> {
-      const appointmentRepository = getCustomRepository(AppointmentRepository);
+    const appointmentRepository = getCustomRepository(AppointmentRepository);
 
-      const parsedDate = startOfHour(date);
+    const parsedDate = startOfHour(date);
 
-      const existAppointmentInDate = await appointmentRepository.findByDate(parsedDate);
+    const existAppointmentInDate = await appointmentRepository.findByDate(parsedDate);
 
-      if (existAppointmentInDate) {
-          throw Error('This appointment already in use!');
-      }
+    if (existAppointmentInDate) {
+      throw Error('This appointment already in use!');
+    }
 
-      const provider = await getRepository(User).findOne({ where: { id: providerId }});
+    const provider = await getRepository(User).findOne({ where: { id: providerId } });
 
-      const appointment = appointmentRepository.create({
-          provider,
-          date: parsedDate,
-        });
+    const appointment = appointmentRepository.create({
+      provider,
+      date: parsedDate,
+    });
 
-        await appointmentRepository.save(appointment);
+    await appointmentRepository.save(appointment);
 
-        return appointment;
+    return appointment;
   }
 
 }
