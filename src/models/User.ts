@@ -20,6 +20,9 @@ class User {
   @Column({ type: "varchar" })
   password: string;
 
+  @Column({ type: "varchar" })
+  avatar: string;
+
   @CreateDateColumn({ name: "created_at" })
   createdAt: Date;
 
