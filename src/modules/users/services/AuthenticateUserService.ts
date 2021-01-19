@@ -1,19 +1,20 @@
-import { getRepository } from 'typeorm';
-import { compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken'
+import { getRepository } from "typeorm";
+import { compare } from "bcrypt";
+import { sign } from "jsonwebtoken";
 
-import authConfig from '../config/auth';
+import authConfig from "@config/auth";
+import AppError from "@shared/erros/AppError";
 
-import User from '../models/User';
+import User from "@modules/users/infra/typeorm/entities/User";
 
 interface RequestDTO {
-  email: string,
-  password: string,
+  email: string;
+  password: string;
 }
 
 interface Response {
-  user: User,
-  token: string
+  user: User;
+  token: string;
 }
 
 class AuthenticateUserService {
@@ -21,17 +22,17 @@ class AuthenticateUserService {
     const usersRepository = getRepository(User);
 
     const user = await usersRepository.findOne({
-      where: { email }
+      where: { email },
     });
 
     if (!user) {
-      throw Error('This email/password is incorret!');
+      throw new AppError("This email/password is incorret!");
     }
 
     const passwordMatched = await compare(password, user.password);
 
     if (!passwordMatched) {
-      throw Error('This email/password is incorret!');
+      throw new AppError("This email/password is incorret!");
     }
 
     const { jwt } = authConfig;
@@ -40,8 +41,7 @@ class AuthenticateUserService {
       subject: user.id,
       expiresIn: jwt.expiresIn,
     });
-    
-    
+
     return {
       user,
       token,
